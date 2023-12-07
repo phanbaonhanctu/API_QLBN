@@ -10,13 +10,18 @@ namespace API_QLBN.Controllers
     [ApiController]
     public class Benhnhan : ControllerBase
     {
-        static string connectionString = "Server=api.ctu-it.com;Database=QuanLyBenhNhan;User=sa;Password=Nolove@@123;Encrypt=True;TrustServerCertificate=True";
-        SqlConnection conn = new SqlConnection(connectionString);
-        SqlCommand cmd = new SqlCommand();
+        private readonly IConfiguration _configuration;
+        public Benhnhan(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         // GET: api/<benhnhan>
         [HttpGet]
         public IActionResult Get()
         {
+            string? connectionString = _configuration.GetConnectionString("MSSQL");
+            SqlConnection conn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand();
             List<BENHNHAN> listBN = new List<BENHNHAN>();
                 try
                 {
@@ -52,6 +57,9 @@ namespace API_QLBN.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] BENHNHAN value)
         {
+            string? connectionString = _configuration.GetConnectionString("MSSQL");
+            SqlConnection conn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand();
             try
             {
                 conn.Open();
@@ -92,6 +100,9 @@ namespace API_QLBN.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(Guid id, [FromBody] BENHNHAN value)
         {
+            string? connectionString = _configuration.GetConnectionString("MSSQL");
+            SqlConnection conn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand();
             try
             {
                 conn.Open();
@@ -128,11 +139,15 @@ namespace API_QLBN.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
+            string? connectionString = _configuration.GetConnectionString("MSSQL");
+            SqlConnection conn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand();
             try
             {
                 conn.Open();
                 cmd = conn.CreateCommand();
-                cmd.CommandText = $"DELETE FROM BENHNHAN WHERE id='{id}'";
+                cmd.CommandText = "DELETE FROM BENHNHAN WHERE id=@ID";
+                cmd.Parameters.AddWithValue("@ID", id);
                 int result = cmd.ExecuteNonQuery();
                 if (result == 0)
                 {
